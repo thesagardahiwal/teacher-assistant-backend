@@ -1,7 +1,7 @@
-import { ZodObject } from "zod";
+import { ZodArray, ZodObject } from "zod";
 import { Request, Response, NextFunction } from "express";
 
-const validate = (schema: ZodObject) => 
+const validate = (schema: ZodObject | ZodArray) => 
   (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse(req.body);
