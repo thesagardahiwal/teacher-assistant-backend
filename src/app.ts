@@ -28,8 +28,8 @@ app.use(cors({
     origin: 'http://localhost:3000', // Adjust this to your frontend URL
     credentials: true, // Allow cookies to be sent with requests
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true, limit: '50mb' })); // Increase body size limit if needed
 app.get('/', (req, res) => {

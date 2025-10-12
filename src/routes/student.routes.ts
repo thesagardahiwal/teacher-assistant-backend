@@ -1,13 +1,12 @@
 import { Router } from "express";
 import { authMiddleware } from "../middleware/auth";
-import { importStudents } from "../controllers/student.controller";
-import validate from "../middleware/validate";
-import { studentArraySchema } from "../validations/student.validation";
+import { importStudent, importStudents } from "../controllers/student.controller";
 
 const router = Router();
 
 // @route   POST /api/students/import
 // @desc    Import students via JSON
-router.post("/import", authMiddleware, validate(studentArraySchema), importStudents);
+router.post("/", authMiddleware, importStudent);
+router.post("/import", authMiddleware, importStudents);
 
 export default router;

@@ -7,7 +7,14 @@ import { studentArraySchema } from "../validations/student.validation";
 export const importStudents = async (req: Request, res: Response) => {
   try {
     // Validate incoming JSON
-    const parsedStudents = studentArraySchema.parse(req.body.students);
+    console.log("First line of importStudents controller");
+    const items = req.body.students;
+    
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ msg: "Invalid payload: 'students' must be an array" });
+    }
+
+    const parsedStudents = studentArraySchema.parse(items);
 
     const inserted: any[] = [];
     const failed: any[] = [];
@@ -19,6 +26,7 @@ export const importStudents = async (req: Request, res: Response) => {
         const existing = await Student.findOne({
           rollNumber: student.rollNumber,
           batch: student.batch,
+          enrollmentNumber: student.enrollmentNumber
         });
 
         if (existing) {
@@ -68,6 +76,40 @@ export const importStudents = async (req: Request, res: Response) => {
   }
 };
 
+export const importStudent = async (req: Request, res: Response) => {
+  try {
+    const { name, rollNumber, email, batchId } = req.body;
+
+    const batch = await Batch.findById(batchId);
+    if (!batch) return res.status(404).json({ msg: "Batch not found" });
+
+    // Check duplicate
+    const existing = await Student.findOne({
+      rollNumber,
+      batch: batch._id
+    });
+
+    if (existing) {
+      return res.status(400).json({ msg: "Student with this roll number already exists in the batch" });
+    }
+
+    const student = new Student({
+      name,
+      rollNumber,
+      email,
+      batch: batch._id,
+      department: batch.department,
+      year: batch.year
+    });
+
+    await student.save();
+
+    res.status(201).json({ msg: "Student added successfully", student });
+  } catch (err: any) {
+    res.status(500).json({ msg: "Server Error", error: err.message });
+  };
+};
+
 // @desc Import students (JSON from frontend) into a batch
 export const importStudentsToBatch = async (req: Request, res: Response) => {
   try {
@@ -85,6 +127,8 @@ export const importStudentsToBatch = async (req: Request, res: Response) => {
         email: s.email,
         batch: batch._id,
         department: batch.department,
+        enrollmentNumber: s.enrollmentNumber,
+        guardian: s.guardian,
         year: batch.year
       });
       await student.save();

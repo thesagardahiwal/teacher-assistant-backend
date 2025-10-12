@@ -3,7 +3,7 @@ import { Schema, model, Document } from "mongoose";
 export interface IStudent extends Document {
   studentId: string;
   rollNumber: string;
-  enrollmentNumber?: string;
+  enrollmentNumber: string;
   name: string;
   email?: string;
   phone?: string;
@@ -34,7 +34,7 @@ const StudentSchema = new Schema<IStudent>(
   {
     studentId: { type: String, unique: true, required: false }, // can be auto-generated
     rollNumber: { type: String, required: true },
-    enrollmentNumber: { type: String },
+    enrollmentNumber: { type: String, required: true, unique: true },
 
     name: { type: String, required: true },
     email: { type: String, unique: false }, // not all students may have email
