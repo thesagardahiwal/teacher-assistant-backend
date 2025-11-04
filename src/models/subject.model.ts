@@ -4,7 +4,7 @@ export interface ISubject extends Document {
   name: string;
   code: string;
   department: string;
-  year: number;
+  year: String;
   semester: number;
   credits?: number;
   description?: string;
@@ -26,7 +26,7 @@ const SubjectSchema = new Schema<ISubject>({
   name: { type: String, required: true },
   code: { type: String, required: true, unique: true },
   department: { type: String, required: true },
-  year: { type: Number, required: true },
+  year: { type: String, required: true },
   semester: { type: Number, required: true },
   credits: { type: Number },
   description: { type: String },

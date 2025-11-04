@@ -5,7 +5,7 @@ import Batch from "../models/batch.model";
 // @desc Create a subject
 export const createSubject = async (req: Request, res: Response) => {
   try {
-    const { name, code, department, year, semester, credits, description, batchId, teacherId } = req.body;
+    const { name, code, department, year, semester, credits, description, batch: batchId, teacher: teacherId } = req.body;
 
     const batch = await Batch.findById(batchId);
     if (!batch) return res.status(404).json({ msg: "Batch not found" });
@@ -37,7 +37,27 @@ export const createSubject = async (req: Request, res: Response) => {
 export const getBatchSubjects = async (req: Request, res: Response) => {
   try {
     const { batchId } = req.params;
-    const subjects = await Subject.find({ batch: batchId }).populate("teacher", "name email");
+    const subjects = await Subject.find({ batch: batchId }).populate("teacher batch", "name email");
+    res.json(subjects);
+  } catch (err: any) {
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
+};
+
+// @desc Get all subjects 
+export const getSubjects = async (req: Request, res: Response) => {
+  try {
+    const subjects = await Subject.find().populate("teacher batch", "name email");
+    res.json(subjects);
+  } catch (err: any) {
+    res.status(500).json({ msg: "Server error", error: err.message });
+  }
+};
+
+export const getSubject = async (req: Request, res: Response) => {
+  try {
+    const { subjectId } = req.params;
+    const subjects = await Subject.findById(subjectId).populate("teacher", "name email");
     res.json(subjects);
   } catch (err: any) {
     res.status(500).json({ msg: "Server error", error: err.message });
